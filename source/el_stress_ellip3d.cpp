@@ -29,6 +29,7 @@ void el_stress_ellip3d(const char * outputDir,
                        int el,
                        int ip,
 		       mat D,
+		       cube & stress_dem_el,
                        cube & stress_el,
                        cube & strain_el,
                        double dt,
@@ -52,7 +53,7 @@ void el_stress_ellip3d(const char * outputDir,
     
     string::size_type sz, addin;
 
-    mat stress;
+    mat stress, stress_dem;
     mat strain;
     mat xi_vect;
     mat Je, Jeinv;
@@ -63,7 +64,7 @@ void el_stress_ellip3d(const char * outputDir,
     vec f_e;
     vec dudX, dudX_n;
     vec weight(4);
-    vec S;
+    vec S, S_dem(3);
     
     char cCurrentPath[FILENAME_MAX];
     
@@ -104,6 +105,7 @@ void el_stress_ellip3d(const char * outputDir,
     stress_el.zeros(numips,nstress,nel);
     strain_el.zeros(numips,nstress,nel);
     stress.zeros(numips, nstress);
+    stress_dem.zeros(numips, nstress);
     strain.zeros(numips, nstress);
     xi_vect.zeros(4,2);
     Je.zeros(2,2);
@@ -196,12 +198,14 @@ void el_stress_ellip3d(const char * outputDir,
 
     dudX_n = B*d_last.t();
 
+if ((el==0)&&(ip==0))
+{
         
     dtop_n = h0 * (-dudX_n(1));
     dtop  = h0 * (-dudX(1)) - dtop_n;
     shearAngle_n = atan(dudX_n(2));
     shearAngle = atan(dudX(2))-shearAngle_n;
-    
+    cout<<"Shear Angle = "<<shearAngle<<endl; 
     dirName = string(outputDir) + "/el"+ to_string(el+1) + "_ip" + to_string(ip+1);
         
     cout << "dirName = " << dirName << endl;
@@ -239,7 +243,12 @@ void el_stress_ellip3d(const char * outputDir,
 	if(ii == 23) sig31 = trash;
     }
 
-        
+    S_dem(0)=sig11;
+    S_dem(1)=sig33;
+    S_dem(2)=sig13;
+    stress_dem.row(ip)=S_dem.t();
+    stress_dem_el.slice(el)=stress_dem;
         
     infile.close();
+}
 }

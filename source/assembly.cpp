@@ -16917,7 +16917,6 @@ void assembly::simpleShear(int   total_steps,
 
 //    subDivision();	// at present, subdivide before simulation
 //printParticle("fractured_particles");
-
     // iterations start here...
     g_iteration=0;
     gettimeofday(&time_w1,NULL);
@@ -16927,6 +16926,14 @@ void assembly::simpleShear(int   total_steps,
     REAL top_init = getApt(5).getz();
     REAL topCompressRate = topDispl/double(total_steps);
     REAL shearRate = shearAngle/double(total_steps);
+
+    cout<<"Right wall"<<endl;
+    cout<<"Apt ["<<getApt(1).getx()<<' '<<getApt(1).gety()<<' '<<getApt(1).getz()<<']'<<endl;
+    cout<<"dirc ["<<getDirc(1).getx()<<' '<<getDirc(1).gety()<<' '<<getDirc(1).getz()<<']'<<endl;
+
+    cout<<"Left wall"<<endl;
+    cout<<"Apt ["<<getApt(3).getx()<<' '<<getApt(3).gety()<<' '<<getApt(3).getz()<<']'<<endl;
+    cout<<"dirc ["<<getDirc(3).getx()<<' '<<getDirc(3).gety()<<' '<<getDirc(3).getz()<<']'<<endl; 
 
     std::vector<particle*>::iterator pt;
     for(pt=ParticleVec.begin(); pt!=ParticleVec.end(); ++pt){
@@ -16966,7 +16973,6 @@ void assembly::simpleShear(int   total_steps,
 //	granularStress = getGranularStress();	// calculate granular stress
 
 	void_ratio=Volume/getParticleVolume()-1;
-
 	// displacement control
 	minctl[0].tran=vec(0,0,-topCompressRate);
 	minctl[1].tran=vec(0,0,0);	// move bottom boundary up
@@ -17007,12 +17013,10 @@ void assembly::simpleShear(int   total_steps,
 
 */
 
-	
 	updateRB(min,minctl,2);
 	updateRB(mid,midctl,2);
 	updateRB(max,maxctl,2);
 	updateRB6();
-	
 	// 7. (1) output particles and contacts information
 	if (g_iteration % (total_steps/snapshots) == 0){
 	    sprintf(stepsstr, "%03d", stepsnum+first_snapshot); 

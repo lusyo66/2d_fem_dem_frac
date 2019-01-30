@@ -644,9 +644,14 @@ void particle::planeRBForce(plnrgd_bdry<particle>* plb,
 	r=tmp1.dirc.getz();
 	s=-tmp1.dirc%tmp1.apt;  // plane equation: p(x-x0)+q(y-y0)+r(z-z0)=0, that is, px+qy+rz+s=0
 
+        cout<<"apt: ["<<tmp1.apt.getx()<<' '<<tmp1.apt.gety()<<' '<<tmp1.apt.getz()<<"]   dirc: ["<<p<<' '<<q<<' '<<r<<']'<<endl;
+
 	vec pt1;
 	if (!nearestPTOnPlane(p, q, r, s, pt1)) // the particle and the plane does not intersect
-	  return;
+	{
+	    cout<<"Not intersect"<<endl;	 
+ 	    return;
+	}
 
 	// if particle and plane intersect:
 	cntnum++;
@@ -654,7 +659,10 @@ void particle::planeRBForce(plnrgd_bdry<particle>* plb,
 	vec dirc=normalize(vec(p,q,r));
 	vec rt[2];
 	if (!intersectWithLine(pt1,dirc,rt))    // the line and ellipsoid surface does not intersect
+	{
+	    cout<<"Not intersect"<<endl;
 	    return;
+	}
 
 	vec pt2;
 	/*
@@ -670,6 +678,7 @@ void particle::planeRBForce(plnrgd_bdry<particle>* plb,
 
 	// obtain normal force
 	REAL penetration=vfabs(pt1-pt2);
+	cout<<"penetration = pt1-pt2 = ["<<pt1.getx()<<' '<<pt1.gety()<<' '<<pt1.getz()<<"]-["<<pt2.getx()<<' '<<pt2.gety()<<' '<<pt2.getz()<<']'<<endl;
 	if (penetration / (2.0*getRadius(pt2) ) <= MINOVERLAP)
 	    return;
 

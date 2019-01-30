@@ -1,8 +1,8 @@
 #!/bin/bash
 #PBS -N debug
-#PBS -l select=1:ncpus=32:mpiprocs=8
-#PBS -l walltime=100:00:00
-#PBS -q standard
+#PBS -l select=1:ncpus=32:mpiprocs=1
+#PBS -l walltime=1:00:00
+#PBS -q debug
 #PBS -j oe
 #PBS -V
 #PBS -A ONRDC34502393

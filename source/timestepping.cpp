@@ -63,7 +63,7 @@ void timestepping(const char * outputDir,
     
     string dirName;
     
-    cube mass_el, stiff_el;
+    cube mass_el, stiff_el, stress_dem_el;
     
     mat coords, LM, g;
     mat fg_el, fs_el, d_el, v_el, a_el, a_el_last, Delta_a_el;
@@ -162,6 +162,7 @@ void timestepping(const char * outputDir,
     F_F = traction * Area;
     
     stress_el.zeros(nstress, numips,nel);
+    stress_dem_el.zeros(nstress, numips, nel);
     mass_el.zeros(neldof, neldof,nel);
     stiff_el.zeros(neldof,neldof,nel);
     fg_el.zeros(neldof, nel);
@@ -409,9 +410,9 @@ void timestepping(const char * outputDir,
             }
                 
             if (dt==1.0e-7) {
-				el_stress_ellip3d(outputDir, coords.row(el), d_el.row(el), d_el_last.row(el), params, n_save, -1, n, el, ip, D, stress_el, isv_el, dt, demParams);
+				el_stress_ellip3d(outputDir, coords.row(el), d_el.row(el), d_el_last.row(el), params, n_save, -1, n, el, ip, D, stress_dem_el,  stress_el, isv_el, dt, demParams);
 			} else if (dt==1.0e-8) {
-				el_stress_ellip3d(outputDir, coords.row(el), d_el.row(el), d_el_last.row(el), params, n_save, n_stop, n, el, ip, D, stress_el, isv_el, dt, demParams);
+				el_stress_ellip3d(outputDir, coords.row(el), d_el.row(el), d_el_last.row(el), params, n_save, n_stop, n, el, ip, D,stress_dem_el,  stress_el, isv_el, dt, demParams);
 			} else {
 				cout << "Location 3: dt isn't correct: dt = " << dt << endl;
 				exit(1);

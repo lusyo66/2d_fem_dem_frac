@@ -65,7 +65,7 @@ int main(int argc, char * argv[]) {
     mat asolve, dsolve;
     mat stress_el_last, strain_el_last;
     
-    cube stress_el, mass_el, stiff_el, strain_el, Kk, Mm;
+    cube stress_dem_el, stress_el, mass_el, stiff_el, strain_el, Kk, Mm;
     
     vec params, dispfun_time, dispfun_disp, dispfun_eps;
     vec Ff, Ftotal, RHS, F, F_G, F_S;
@@ -84,7 +84,7 @@ int main(int argc, char * argv[]) {
     
     const char * BI_file_Path, * PI_file_Path, * outputDir, * qdel_Path, * fem_inputs, * dem_inputs;
     
-    ofstream d_file, v_file, a_file, t_file, stress_file, strain_file, F_S_file;
+    ofstream d_file, v_file, a_file, t_file, stress_dem_file,  stress_file, strain_file, F_S_file;
     char cCurrentPath[FILENAME_MAX];
 
 #ifdef USE_MPI
@@ -230,7 +230,7 @@ int main(int argc, char * argv[]) {
     params(10) = neldof;
     params(11) = ndof;
 
-    el_height = 0.02;
+    el_height = 0.25;
     el_width = el_height;
 
     createCoords(coords,params,el_width,el_height);
@@ -274,6 +274,7 @@ int main(int argc, char * argv[]) {
 
     // Initialization
     g.zeros(neldof,nel);
+    stress_dem_el.zeros(numips,nstress,nel);
     stress_el.zeros(numips,nstress,nel);
     strain_el.zeros(numips,nstress,nel);
     stress_el_last.zeros(numips,nstress);
@@ -408,7 +409,8 @@ int main(int argc, char * argv[]) {
     }
 
     femParams.~femInput();
-    grav_t_ramp=10.0;
+cout<<"fem input"<<endl;
+    grav_t_ramp=0.0;
 	nsteps_g=round(grav_t_ramp/dt);
 	nsteps_F=round((time_tot/dt));
 	nsteps=nsteps_g+nsteps_F;
@@ -432,9 +434,10 @@ int main(int argc, char * argv[]) {
     }
     vinput.close();
 */
-	omega = 2*3.14159*5e-5;
-	vel0 = 20;
+	omega = 2*3.14159*2e+4;
+	vel0 = 1e+2;
 	iter_break=10;
+cout<<"Ff"<<endl;
 if (rank==0){
     cout<<"Ff"<<endl<<Ff<<endl;
     cout<<"M"<<endl<<M<<endl;
@@ -467,7 +470,7 @@ if (rank==0){
         }
         
 //        createG(g, dispfun_disp, params, n);
-	FF(n) = cFactor*vel0*sin(omega*t);
+	FF(0,n) = cFactor*vel0*sin(omega*t);
         FFsolve(n) = FF(n);
 	for (int dof=0; dof<5; dof++)
 	    Ftotal(dof) = grav_factor*Ff(dof)+FF(dof,n);
@@ -519,7 +522,7 @@ if (rank==0){
 #endif
 		    cout<<"stress calculation start"<<endl;
                     el_stress_ellip3d(outputDir, coords.row(el), d_el.row(el), d_el_last.row(el), params, 
-                                      n_print, -1, -1, el, ip, D, stress_el, strain_el, dt, demParams);
+                                      n_print, -1, -1, el, ip, D, stress_dem_el,  stress_el, strain_el, dt, demParams);
 #ifndef USE_MPI
                 }
 #endif
@@ -625,9 +628,10 @@ if (rank==0){
     	    v_file.open("v.txt",ofstream::out | ofstream::app);
     	    a_file.open("a.txt",ofstream::out | ofstream::app);
     	    t_file.open("t.txt",ofstream::out | ofstream::app);
-    	    stress_file.open("stress.txt",ofstream::out | ofstream::app);
+    	    stress_dem_file.open("stress_dem.txt",ofstream::out | ofstream::app);
+	    stress_file.open("stress.txt",ofstream::out | ofstream::app);
     	    strain_file.open("isv_el.txt",ofstream::out | ofstream::app);
-//    	    F_S_file.open("F_S.txt",ofstream::out | ofstream::app);
+    	    F_S_file.open("F_total.txt",ofstream::out | ofstream::app);
 
             d_file.precision(5);
             d_file.setf(ios::scientific);
@@ -635,28 +639,34 @@ if (rank==0){
     	    v_file.setf(ios::scientific);
             a_file.precision(5);
     	    a_file.setf(ios::scientific);
+	    stress_dem_file.precision(5);
+            stress_dem_file.setf(ios::scientific);
             stress_file.precision(5);
     	    stress_file.setf(ios::scientific);
             strain_file.precision(5);
     	    strain_file.setf(ios::scientific);
-//            F_S_file.precision(5);
-//    	    F_S_file.setf(ios::scientific);
+            F_S_file.precision(5);
+    	    F_S_file.setf(ios::scientific);
 	    
             d.raw_print(d_file);
     	    v.raw_print(v_file);
     	    a.raw_print(a_file);
-//            F_S.raw_print(F_S_file);
+            Ftotal.raw_print(F_S_file);
     	    t_file << t << endl;
 			for (ii=0; ii<nel; ii++){
 				for (jj=0; jj<nstress; jj++){
 					for (kk=0; kk<numips; kk++){
 						stress_file << stress_el(kk,jj,ii) << " ";
 					}
+					for (kk=0; kk<numips; kk++){
+                                                stress_dem_file << stress_dem_el(kk,jj,ii) << " ";
+                                        }
 					for (ll=0; ll<numips; ll++){
 						strain_file << strain_el(ll,jj,ii) << " ";
 					}
 				}
 			}
+			stress_dem_file << endl;
 			stress_file << endl;
 			strain_file << endl;
 
@@ -664,9 +674,10 @@ if (rank==0){
     	    v_file.close();
     	    a_file.close();
     	    t_file.close();
+	    stress_dem_file.close();
      	    stress_file.close();
     	    strain_file.close();
-//    	    F_S_file.close();
+    	    F_S_file.close();
         }
 
 #ifdef USE_MPI

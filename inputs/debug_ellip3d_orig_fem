@@ -4,7 +4,7 @@ $FEM Constitutive
 1700.0
 
 $Gravity
-9.81e+6
+9.81
 
 $FEM Geometry
 0.0127
@@ -25,10 +25,10 @@ $FEM Constants
 
 $Time Parameters
 0.0
-1.0e-7
-10
+5.0e-6
 1
-1.0e-3
+1
+5.0e-4
 
 $Strain Rate
 387.0

@@ -33,8 +33,9 @@ void el_stress_ellip3d(const char * outputDir,
                        int el,
                        int ip,
 		       mat D,
+		       cube & stress_dem_el,
                        cube & stress_el,
-                       cube & isv_el,
+                       cube & strain_el,
                        double dt,
                        demInput demParams);
 

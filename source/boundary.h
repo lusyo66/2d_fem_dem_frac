@@ -182,7 +182,9 @@ void rgd_bdry<T>::update(UPDATECTL& ctl){
 	for (it=CoefOfLimits.begin();it!=CoefOfLimits.end();++it){
 		tmp=*it;
 		nv=rotateVec(tmp.dirc,ctl.rote);
+		ctl.fixpt=tmp.apt; //simple shear
 		napt=ctl.tran+ctl.fixpt+rotateVec(tmp.apt-ctl.fixpt,ctl.rote);
+//		cout<<"napt=ctl.tran+ctl.fixpt ["<<napt.getx()<<' '<<napt.gety()<<' '<<' '<<napt.getz()<<"]=["<<ctl.tran.getx()<<' '<<ctl.tran.gety()<<' '<<ctl.tran.getz()<<"]+["<<ctl.fixpt.getx()<<' '<<ctl.fixpt.gety()<<' '<<ctl.fixpt.getz()<<']'<<endl;
 		(*it).dirc=nv;
 		(*it).apt=napt;
 	}
@@ -295,12 +297,14 @@ template<class T>
 REAL plnrgd_bdry<T>::distToBdry(vec posi) const{
 	vec dv=(*this->CoefOfLimits.begin()).dirc;
 	vec pt=(*this->CoefOfLimits.begin()).apt;
+//	cout<<"pt ["<<pt.getx()<<' '<<pt.gety()<<' '<<pt.getz()<<']'<<endl;
 	vec ndv=normalize(dv);
 	return (posi-pt)%ndv;
 };
 
 template<class T>
 void plnrgd_bdry<T>::findParticleOnBoundary(std::vector<T*>& ptcls){
+//    cout<<"find particle on boundary"<<endl;
     typename std::vector<T*>::iterator it;
     std::vector<BdryCoef>::iterator bt;
     bool next;
@@ -321,6 +325,7 @@ void plnrgd_bdry<T>::findParticleOnBoundary(std::vector<T*>& ptcls){
 	    next=true;
 	    for (bt=++this->CoefOfLimits.begin();bt!=this->CoefOfLimits.end();++bt){ // CoefOfLimits[1,2,...]
 		ndirc=normalize((*bt).dirc);
+//		cout<<"bt ["<<(*bt).apt.getx()<<' '<<(*bt).apt.gety()<<' '<<(*bt).apt.getz()<<']'<<endl;
 		r=vfabs((posi-(*bt).apt)-(posi-(*bt).apt)%ndirc*ndirc);
 		if( ( (*bt).order==1 && (posi-(*bt).apt)%(*bt).dirc >= 0 ) ||
 		    ( (*bt).order==2 && (r-(*bt).rad)*(*bt).side<0 ) ){

@@ -1,10 +1,10 @@
 $FEM Constitutive
-3.13e8
-2.8e8
-1540.0
+0.0
+1.0625e+8
+1700.0
 
 $Gravity
-0.0
+9.81e+6
 
 $FEM Geometry
 0.0127
@@ -16,17 +16,17 @@ $DEM Geometry
 0.003
 
 $FEM Constants
-2
-6
-2
-1
+4
+3
 2
 2
+2
+8
 
 $Time Parameters
 0.0
-2.0e-8
-50
+1.0e-7
+10
 1
 0.001
 
