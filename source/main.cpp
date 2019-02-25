@@ -435,7 +435,7 @@ cout<<"fem input"<<endl;
     vinput.close();
 */
 	omega = 2*3.14159*2e+4;
-	vel0 = 1e+2;
+	vel0 = 1e+3;
 	iter_break=10;
 cout<<"Ff"<<endl;
 if (rank==0){

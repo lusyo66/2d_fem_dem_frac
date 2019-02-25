@@ -60,6 +60,14 @@ typedef struct bdryfunc{
 	}
 } BdryCoef;
 
+typedef struct BdryContact{
+	vec point;
+	vec normal;
+	vec tangt;
+	REAL penetr;
+	vec centerToPoint;
+} BDRYCONTACT;
+
 // LINE and CIRC are structs used in flexible boundary classes
 typedef struct updatectl{
 	vec tran;    // tranlation second
@@ -117,7 +125,8 @@ typedef struct circ{
 template<class T> class rgd_bdry{
 public:
 	int  bdry_id;    // the first record defines the bdry itself, the other 
-	std::vector<BdryCoef> CoefOfLimits; // limitnum records define the other lines on the bdry 
+	std::vector<BdryCoef> CoefOfLimits; // limitnum records define the other lines on the bdry
+	std::vector<BDRYCONTACT> contactInfo;
 	REAL avg_normal; // that give limits to the first boundary.
 	REAL avg_penetr; // average penetration by particles onto this boundary
 	int  cntnum;     // contact numbers by particles onto this boundary
@@ -126,6 +135,7 @@ public:
 public:
 	rgd_bdry(std::ifstream &ifs);
 	int getBdryID() {return bdry_id;}
+	std::vector<BDRYCONTACT> &getContactInfo() {return contactInfo;}
 	virtual ~rgd_bdry() {} // base class needs a virtual destructor.
 	virtual void disp() const{
 		std::vector<BdryCoef>::const_iterator it;
