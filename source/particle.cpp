@@ -874,6 +874,13 @@ void particle::planeRBForce(plnrgd_bdry<particle>* plb,
 
 	}
 	
+	BdryContact tmp_info;
+        tmp_info.point = pt1;
+        tmp_info.normal = -NormalForce;
+        tmp_info.tangt = -TgtForce;
+        tmp_info.penetr = penetr;
+        tmp_info.centerToPoint = pt1 -curr_position;
+        plb->getContactInfo().push_back(tmp_info);	
 	plb->normal -= NormalForce;
 	plb->tangt  -= TgtForce;
 //	plb->moment-=(((pt1+pt2)/2-curr_position)*NormForce+

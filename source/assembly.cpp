@@ -1957,6 +1957,25 @@ matrix assembly::getGranularStress() const{
 		totalForce += lc*Fc;
 
 	}
+/*
+////////////////////////////// Bagi ////////////////////////////////////////////
+        matrix le(3,1), Fe(1,3);
+        std::vector<RGDBDRY*>::const_iterator jt;
+        for (jt=RBVec.begin();jt!=RBVec.end();++jt){
+                std::vector<BDRYCONTACT>::iterator kt;
+                for (kt=(*jt)->getContactInfo().begin();kt!=(*jt)->getContactInfo().end();++kt){
+                        le(1,1)=kt->centerToPoint.getx();
+                        le(2,1)=kt->centerToPoint.gety();
+                        le(3,1)=kt->centerToPoint.getz();
+                        Fe(1,1)=-kt->normal.getx()-kt->tangt.getx();
+                        Fe(1,2)=-kt->normal.gety()-kt->tangt.gety();
+                        Fe(1,3)=-kt->normal.getz()-kt->tangt.getz();
+                        totalForce += le*Fe;
+                        }
+        }
+//////////////////////////// End of Bagi /////////////////////////////////////////
+*/
+
 	sigma = totalForce/Volume;
 	return sigma;
 
@@ -17096,7 +17115,10 @@ void assembly::simpleShear(int   total_steps,
 	    granularStress = getGranularStress();	// calculate granular stress
 	    stiffnessD = calculateStiffness();
 	    D11=stiffnessD(9,9);
-
+	    cout<<"granular stress"<<endl;
+	    cout<<granularStress(1,1)<<' '<<granularStress(1,2)<<' '<<granularStress(1,3)<<endl;
+	    cout<<granularStress(2,1)<<' '<<granularStress(2,2)<<' '<<granularStress(2,3)<<endl;
+	    cout<<granularStress(3,1)<<' '<<granularStress(3,2)<<' '<<granularStress(3,3)<<endl;
 	    gettimeofday(&time_w2,NULL);
 	    progressinf << setw(OWID) << g_iteration
 		        << setw(OWID) << getPossCntctNum()
